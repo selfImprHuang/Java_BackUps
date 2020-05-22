@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sunsharing.archive.backups.dao.BackupsDao">
+
+
+    <select id="getAllUser" resultType="java.util.Map">
+        select * FROM T_BACKUPS_TEST
+    </select>
+
+    <select id="tableExistInDb" resultType="java.lang.String">
+      SELECT
+        T .TABLE_NAME
+      FROM
+        USER_TABLES T
+      WHERE
+      T .TABLE_NAME = #{tableName}
+    </select>
+
+    <update id="createTable">
+        CREATE TABLE
+        ${newTable} AS
+        SELECT
+            *
+        FROM
+            ${oldTable}
+        WHERE
+            1 = 2
+    </update>
+
+    <select id="getColumn" resultType="com.sunsharing.archive.backups.table.ColumnAttribute">
+            select COLUMN_NAME as columnName,DATA_TYPE as dateType,DATA_LENGTH as dateLength from user_tab_cols where table_name= #{tableName}
+    </select>
+
+    <select id="getDateByNum" resultType="java.util.Map">
+        select *
+          from ${tableName}
+        where 1=1
+        <![CDATA[and ${column} > #{begin}]]>
+        <![CDATA[and ${column} < #{end}]]>
+        <![CDATA[and rownum<#{num}
+
+
+        ]]>
+    </select>
+    <!--
+
+    -->
+
+
+    <select id="count" resultType="java.lang.Long">
+     select count(*)
+          from ${tableName}
+        where
+        <![CDATA[${column} > #{begin}]]>
+        <![CDATA[and ${column} < #{end}
+
+
+        ]]>
+    </select>
+
+
+    <select id="getBackupsTest" resultType="com.sunsharing.archive.backups.entity.BackUpsTest">
+        Select * from (SELECT
+            ID,
+            BACKUPS_TABLE backupsTable,
+            BACKUPS_TIME backupsTime,
+            BACKUPS_SAVE_TABLE backupsSaveTable,
+            NUM
+        FROM
+            T_BACKUPS_TEST
+        where BACKUPS_TABLE = #{tableName}
+        ORDER BY
+        CREATED_TIME DESC)where
+        <![CDATA[ rownum < 2
+
+
+        ]]>
+    </select>
+
+    <select id="getDateFromMain" resultType="java.util.Date">
+        Select ${column} from (SELECT
+          *
+        FROM
+          ${tableName}
+        ORDER BY
+            ${column} DESC)where
+           <![CDATA[ rownum < 2]]>
+    </select>
+
+    <insert id="insert">
+        insert into ${tableName}
+        <foreach collection="columns" item="item" index="index" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+        VALUES
+        <foreach collection="datas" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </insert>
+
+    <select id="getPrimaryKeyInTable" resultType="com.sunsharing.archive.backups.table.PrimaryKey">
+        SELECT
+            OWNER owner,
+            CONSTRAINT_NAME constraintName,
+            TABLE_NAME tableName,
+            COLUMN_NAME columnName,
+            POSITION position
+        FROM
+            user_cons_columns
+        WHERE
+	      constraint_name = (
+		SELECT
+			constraint_name
+		FROM
+			user_constraints
+		WHERE
+			table_name = #{tableName}
+		AND constraint_type = 'P'
+	)
+    </select>
+
+    <delete id="delete">
+      delete from
+        ${tableName}
+      where ${primaryKey} = #{value}
+    </delete>
+
+
+    <delete id="dropTable">
+      drop table ${tableName}
+    </delete>
+
+</mapper>
