@@ -20,7 +20,7 @@
         <javax.version>7.0</javax.version>
         <junit.version>4.11</junit.version>
         <javax.servlet.version>3.0</javax.servlet.version>
-        <log4j.version>2.3</log4j.version>
+        <log4j.version>2.15.0</log4j.version>
         <slf4j.version>1.7.12</slf4j.version>
         <org.aspectj.version>1.6.2</org.aspectj.version>
         <net.sf.ehcache.version>2.3.2</net.sf.ehcache.version>
